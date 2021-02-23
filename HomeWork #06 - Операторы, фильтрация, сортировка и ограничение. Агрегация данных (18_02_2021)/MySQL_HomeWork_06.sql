@@ -333,6 +333,46 @@ $$
 DELIMITER ;
 
 CALL fillRating; 
-SELECT u.first_name, u.last_name, r.rating, id FROM users u, rating_tmp r WHERE u.id = r.user_id ORDER BY r.rating LIMIT 10;
+SELECT id, u.first_name, u.last_name, r.rating FROM users u, rating_tmp r WHERE u.id = r.user_id ORDER BY rating, first_name, last_name LIMIT 10;
+
+/*
+===============================================================================
+Альтернативная реализация через запросы
+===============================================================================
+*/
+
+SELECT u.id, u.first_name, u.last_name FROM users u;
+SELECT * FROM ratings;
+
+-- соберем потаблично, начнем с posts
+SELECT count(*) FROM posts p WHERE p.user_id = 10;
+SELECT u.id, u.first_name, u.last_name FROM users u;
+SELECT ratio FROM ratings WHERE table_name = 'posts';
+-- соберем рейтинг по всем пользователям по таблице posts с учетом весового коэффициента
+SELECT id, u.first_name, u.last_name, 
+	(SELECT count(*) FROM posts WHERE user_id = u.id) *
+	(SELECT ratio FROM ratings WHERE table_name = 'posts') AS rating
+FROM users u;
+-- теперь внесем в запрос все таблицы, влиящие на рейтинг 
+SELECT u.id, u.first_name, u.last_name, 
+	(SELECT count(*) FROM posts WHERE user_id = u.id) *
+	(SELECT ratio FROM ratings WHERE table_name = 'posts') + 
+	(SELECT count(*) FROM media WHERE user_id = u.id) *
+	(SELECT ratio FROM ratings WHERE table_name = 'media') + 
+	(SELECT count(*) FROM friendship WHERE user_id = u.id) *
+	(SELECT ratio FROM ratings WHERE table_name = 'friendship' AND table_col_name = 'user_id') + 
+	(SELECT count(*) FROM friendship WHERE friend_id = u.id) *
+	(SELECT ratio FROM ratings WHERE table_name = 'friendship' AND table_col_name = 'friend_id') + 
+	(SELECT count(*) FROM communities WHERE owner_id = u.id) *
+	(SELECT ratio FROM ratings WHERE table_name = 'communities') + 
+	(SELECT count(*) FROM communities_users WHERE user_id = u.id) *
+	(SELECT ratio FROM ratings WHERE table_name = 'communities_users') + 
+	(SELECT count(*) FROM likes WHERE user_id = u.id) *
+	(SELECT ratio FROM ratings WHERE table_name = 'likes') 
+	AS rating
+FROM users u ORDER BY rating, first_name, last_name LIMIT 10;
+
+
+
 
 		
