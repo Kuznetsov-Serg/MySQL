@@ -1,5 +1,8 @@
 USE lesson_06;
 
+truncate posts;
+SELECT * FROM posts; 
+
 INSERT INTO `posts` (`id`, `user_id`, `community_id`, `head`, `body`, `media_id`, `is_public`, `is_archived`, `created_at`, `updated_at`) VALUES (1, 22, 1, 'In soluta non animi autem.', '26', 42, 1, 1, '2019-12-17 08:24:50', '2020-12-08 07:49:30');
 INSERT INTO `posts` (`id`, `user_id`, `community_id`, `head`, `body`, `media_id`, `is_public`, `is_archived`, `created_at`, `updated_at`) VALUES (2, 77, 6, 'Exercitationem omnis provident expedita aspernatur ut amet.', '556979', 11, 0, 0, '2012-03-09 00:36:22', '2020-04-30 16:12:07');
 INSERT INTO `posts` (`id`, `user_id`, `community_id`, `head`, `body`, `media_id`, `is_public`, `is_archived`, `created_at`, `updated_at`) VALUES (3, 18, 17, 'Distinctio iusto sunt ut et dolorum.', '3510', 89, 1, 0, '2013-04-09 13:06:53', '2021-01-06 02:46:48');
